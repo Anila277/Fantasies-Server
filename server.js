@@ -17,6 +17,10 @@ const poemsSchema = new mongoose.Schema({
     content: String,
     author: String,
     user: String,
+    tags: Array,
+    comments: Array,
+    likes: Number,
+    dislikes: Number,
 }, {timestamps: true})
 
 const Poems = mongoose.model('Poems', poemsSchema);
@@ -25,7 +29,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(logger('dev'));
 app.use(cors());
-
 //IDUCE
 
 app.get('/api/poems', async (req, res) => {
