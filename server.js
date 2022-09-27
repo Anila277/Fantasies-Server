@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const logger = require('morgan');
 const cors = require('cors');
 const admin = require('firebase-admin');
+const { getAuth } = require('firebase-admin/auth')
 
 const serviceAccount = require('./service-account.json');
 
@@ -35,10 +36,22 @@ app.use(logger('dev'));
 app.use(cors());
 
 // Custom Authentication Middleware
-app.use(function (req, res, next) {
+app.use(async function (req, res, next) {
     //Capture the token from the request
     const token = req.get('Authorization');
-    console.log(token);
+
+    try {
+        if (token) {
+            const user = await getAuth().verifyIdToken(token.replace('Bearer ', ''));
+            req.user = user;
+        } else {
+            req.user = null;
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ erro: 'Bad Request' })
+
+    }
     next();
 })
 
