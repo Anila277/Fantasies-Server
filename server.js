@@ -5,6 +5,14 @@ const app = express();
 const mongoose = require('mongoose');
 const logger = require('morgan');
 const cors = require('cors');
+const admin = require('firebase-admin');
+
+const serviceAccount = require('./service-account.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
 
 mongoose.connect(DATABASE_URL);
 mongoose.connection
@@ -17,7 +25,7 @@ const poemsSchema = new mongoose.Schema({
     content: String,
     author: String,
     user: String,
-}, {timestamps: true})
+}, { timestamps: true })
 
 const Poems = mongoose.model('Poems', poemsSchema);
 
@@ -33,16 +41,16 @@ app.get('/api/poems', async (req, res) => {
         res.status(200).json(await Poems.find({}));
     } catch (error) {
         console.log(error);
-        res.status(400).json({'error': 'bad request'});      
+        res.status(400).json({ 'error': 'bad request' });
     }
-});    
+});
 
 app.post('/api/poems', async (req, res) => {
     try {
         res.status(201).json(await Poems.create(req.body));
     } catch (error) {
         console.log(error);
-        res.status(400).json({'error': 'bad request'});
+        res.status(400).json({ 'error': 'bad request' });
     }
 });
 
@@ -55,7 +63,7 @@ app.put('/api/poems/:id', async (req, res) => {
         ));
     } catch (error) {
         console.log(error);
-        res.status(400).json({'error': 'bad request'});
+        res.status(400).json({ 'error': 'bad request' });
     }
 });
 
@@ -66,7 +74,7 @@ app.delete('/api/poems/:id', async (req, res) => {
         ));
     } catch (error) {
         console.log(error);
-        res.status(400).json({'error': 'bad request'});
+        res.status(400).json({ 'error': 'bad request' });
     }
 });
 
