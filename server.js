@@ -34,6 +34,16 @@ app.use(express.json());
 app.use(logger('dev'));
 app.use(cors());
 
+// Custom Authentication Middleware
+app.use(function (req, res, next) {
+    //Capture the token from the request
+    const token = req.get('Authorization');
+    console.log(token);
+    next();
+})
+
+// Custom Authorization Middleware
+
 //IDUCE
 
 app.get('/api/poems', async (req, res) => {
