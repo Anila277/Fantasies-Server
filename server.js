@@ -49,56 +49,64 @@ app.use(async function (req, res, next) {
         }
     } catch (error) {
         console.log(error);
-        return res.status(400).json({ erro: 'Bad Request' })
+        return res.status(400).json({ error: 'Bad Request' })
 
     }
     next();
-})
+});
 
 // Custom Authorization Middleware
-
-//IDUCE
-
-app.get('/api/poems', async (req, res) => {
-    try {
-        res.status(200).json(await Poems.find({}));
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ 'error': 'bad request' });
+function isAuthenticated(req, res, next) {
+    if (!req.user) {
+        res.status(401).json({ error: 'Must Log In' })
+    } else {
+        next();
     }
-});
 
-app.post('/api/poems', async (req, res) => {
-    try {
-        res.status(201).json(await Poems.create(req.body));
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ 'error': 'bad request' });
-    }
-});
 
-app.put('/api/poems/:id', async (req, res) => {
-    try {
-        res.status(200).json(await Poems.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        ));
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ 'error': 'bad request' });
-    }
-});
 
-app.delete('/api/poems/:id', async (req, res) => {
-    try {
-        res.status(200).json(await Poems.findByIdAndDelete(
-            req.params.id
-        ));
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ 'error': 'bad request' });
-    }
-});
+    //IDUCE
 
-app.listen(PORT, () => console.log(`Express is listening on PORT: ${PORT}`));
+    app.get('/api/poems', isAuthenticated, async (req, res) => {
+        try {
+            res.status(200).json(await Poems.find({}));
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ 'error': 'bad request' });
+        }
+    });
+
+    app.post('/api/poems', async (req, res) => {
+        try {
+            res.status(201).json(await Poems.create(req.body));
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ 'error': 'bad request' });
+        }
+    });
+
+    app.put('/api/poems/:id', async (req, res) => {
+        try {
+            res.status(200).json(await Poems.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            ));
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ 'error': 'bad request' });
+        }
+    });
+
+    app.delete('/api/poems/:id', async (req, res) => {
+        try {
+            res.status(200).json(await Poems.findByIdAndDelete(
+                req.params.id
+            ));
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ 'error': 'bad request' });
+        }
+    });
+
+    app.listen(PORT, () => console.log(`Express is listening on PORT: ${PORT}`));
