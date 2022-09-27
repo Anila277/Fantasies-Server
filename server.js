@@ -26,6 +26,7 @@ const poemsSchema = new mongoose.Schema({
     content: String,
     author: String,
     user: String,
+    createdByUserId: String,
 }, { timestamps: true })
 
 const Poems = mongoose.model('Poems', poemsSchema);
@@ -61,52 +62,54 @@ function isAuthenticated(req, res, next) {
         res.status(401).json({ error: 'Must Log In' })
     } else {
         next();
+    };
+}
+
+
+
+//IDUCE
+
+app.get('/api/poems', isAuthenticated, async (req, res) => {
+    try {
+        res.status(200).json(await Poems.find({ createdByUserId: req.user.uid }));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
     }
+});
 
+app.post('/api/poems', isAuthenticated, async (req, res) => {
+    try {
+        req.body.createdByUserId = req.user.uid
+        res.status(201).json(await Poems.create(req.body));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
 
+app.put('/api/poems/:id', async (req, res) => {
+    try {
+        res.status(200).json(await Poems.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        ));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
 
-    //IDUCE
+app.delete('/api/poems/:id', async (req, res) => {
+    try {
+        res.status(200).json(await Poems.findByIdAndDelete(
+            req.params.id
+        ));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
 
-    app.get('/api/poems', isAuthenticated, async (req, res) => {
-        try {
-            res.status(200).json(await Poems.find({}));
-        } catch (error) {
-            console.log(error);
-            res.status(400).json({ 'error': 'bad request' });
-        }
-    });
-
-    app.post('/api/poems', async (req, res) => {
-        try {
-            res.status(201).json(await Poems.create(req.body));
-        } catch (error) {
-            console.log(error);
-            res.status(400).json({ 'error': 'bad request' });
-        }
-    });
-
-    app.put('/api/poems/:id', async (req, res) => {
-        try {
-            res.status(200).json(await Poems.findByIdAndUpdate(
-                req.params.id,
-                req.body,
-                { new: true }
-            ));
-        } catch (error) {
-            console.log(error);
-            res.status(400).json({ 'error': 'bad request' });
-        }
-    });
-
-    app.delete('/api/poems/:id', async (req, res) => {
-        try {
-            res.status(200).json(await Poems.findByIdAndDelete(
-                req.params.id
-            ));
-        } catch (error) {
-            console.log(error);
-            res.status(400).json({ 'error': 'bad request' });
-        }
-    });
-
-    app.listen(PORT, () => console.log(`Express is listening on PORT: ${PORT}`));
+app.listen(PORT, () => console.log(`Express is listening on PORT: ${PORT}`));
