@@ -23,11 +23,15 @@ mongoose.connection
 
 const poemsSchema = new mongoose.Schema({
     name: String,
+    image: String,
     content: String,
     author: String,
     user: String,
-    createdByUserId: String,
-}, { timestamps: true })
+    tags: Array,
+    comments: Array,
+    likes: Number,
+    dislikes: Number,
+}, {timestamps: true})
 
 const Poems = mongoose.model('Poems', poemsSchema);
 
@@ -64,9 +68,6 @@ function isAuthenticated(req, res, next) {
         next();
     };
 }
-
-
-
 //IDUCE
 
 app.get('/api/poems', isAuthenticated, async (req, res) => {
