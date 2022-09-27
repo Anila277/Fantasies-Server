@@ -14,6 +14,7 @@ mongoose.connection
 
 const poemsSchema = new mongoose.Schema({
     name: String,
+    image: String,
     content: String,
     author: String,
     user: String,
