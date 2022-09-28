@@ -101,6 +101,16 @@ app.post('/api/poems', isAuthenticated, async (req, res) => {
     }
 });
 
+app.post('/api/poems/profile', isAuthenticated, async (req, res) => {
+    try {
+        req.body.createdByUser = req.user.uid
+        res.status(201).json(await Poems.create(req.body));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
+
 app.put('/api/poems/:id', async (req, res) => {
     try {
         res.status(200).json(await Poems.findByIdAndUpdate(
