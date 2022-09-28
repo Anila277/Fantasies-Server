@@ -26,7 +26,7 @@ const poemsSchema = new mongoose.Schema({
     image: String,
     content: String,
     author: String,
-    user: String,
+    createdByUser: String,
     tags: Array,
     comments: Array,
     likes: Number,
@@ -68,11 +68,23 @@ function isAuthenticated(req, res, next) {
         next();
     };
 }
+
+
+
 //IDUCE
 
 app.get('/api/poems', isAuthenticated, async (req, res) => {
     try {
-        res.status(200).json(await Poems.find({ createdByUserId: req.user.uid }));
+        res.status(200).json(await Poems.find({}));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
+
+app.get('/api/poems/profile', isAuthenticated, async (req, res) => {
+    try {
+        res.status(200).json(await Poems.find({createdByUser: req.user.uid}));
     } catch (error) {
         console.log(error);
         res.status(400).json({ 'error': 'bad request' });
@@ -81,7 +93,7 @@ app.get('/api/poems', isAuthenticated, async (req, res) => {
 
 app.post('/api/poems', isAuthenticated, async (req, res) => {
     try {
-        req.body.createdByUserId = req.user.uid
+        req.body.createdByUser = req.user.uid
         res.status(201).json(await Poems.create(req.body));
     } catch (error) {
         console.log(error);
