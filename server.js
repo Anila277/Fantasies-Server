@@ -82,9 +82,18 @@ app.get('/api/poems', isAuthenticated, async (req, res) => {
     }
 });
 
+app.get('/api/poems/profile', isAuthenticated, async (req, res) => {
+    try {
+        res.status(200).json(await Poems.find({createdByUser: req.user.uid}));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
+
 app.post('/api/poems', isAuthenticated, async (req, res) => {
     try {
-        req.body.createdByUser = req.user.displayName
+        req.body.createdByUser = req.user.uid
         res.status(201).json(await Poems.create(req.body));
     } catch (error) {
         console.log(error);
