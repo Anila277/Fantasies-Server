@@ -22,10 +22,10 @@ mongoose.connection
     .on('error', (error) => console.log(error.message));
 
 const poemsSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    content: String,
-    author: String,
+    name: {required: true, type: String},
+    content: {required: true, type: String},
+    author: {required: true, type: String},
+    image: { type: String, default: 'https://images.unsplash.com/photo-1523057530100-383d7fbc77a1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1169&q=80'},
     createdByUser: String,
     tags: Array,
     comments: Array,
@@ -92,6 +92,16 @@ app.get('/api/poems/profile', isAuthenticated, async (req, res) => {
 });
 
 app.post('/api/poems', isAuthenticated, async (req, res) => {
+    try {
+        req.body.createdByUser = req.user.uid
+        res.status(201).json(await Poems.create(req.body));
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ 'error': 'bad request' });
+    }
+});
+
+app.post('/api/poems/profile', isAuthenticated, async (req, res) => {
     try {
         req.body.createdByUser = req.user.uid
         res.status(201).json(await Poems.create(req.body));
