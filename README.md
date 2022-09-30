@@ -12,7 +12,8 @@
     - Netlify
 
 ## Getting Started
-    - Access the site from the Fantasies_App front end and the heroku system will access the mongoDB database
+    - Access the site from the Fantasies_App front end and the heroku system 
+    will access the mongoDB database
     
 ## Live server
     - Hosted on Heroku 
